@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+
+while (<STDIN>) {
+   s/#[^ ]+ - Mozilla Firefox/Fun Chat/;
+   s/.*"WeeChat.*/IRC Chat/;
+   s/\* [^ ]+ \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
+   s/.* Google Chrome/Chrome/;
+   s/.*Mozilla Firefox/Firefox/;
+
+   if ($_ eq "/bin/zsh\n" || $_ =~ m/^[^:]+:\d+:[^ ]+ - "caliburn"/) {
+      next
+   }
+
+   s(^[^:]+:(vim|zsh):.+/unproductive)(Fun Project Unproductive);
+   s(^[^:]+:(vim|zsh):.+/dotfiles)(Fun Project Dotfiles);
+
+   s(^[^:]+:(vim|zsh):.+/zr)(ZR);
+   s(^vim:.+/zr)(ZR);
+
+
+   print $_;
+}
