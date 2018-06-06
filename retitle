@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 while (<STDIN>) {
+   s/Signal.*/Signal/;
    s/#[^ ]+ - Mozilla Firefox/Fun Chat/;
    s/.*"WeeChat.*/IRC Chat/;
    s/\* [^ ]+ \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
