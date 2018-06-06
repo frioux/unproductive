@@ -4,7 +4,19 @@ while (<STDIN>) {
    s/Signal.*/Signal/;
    s/#[^ ]+ - Mozilla Firefox/Fun Chat/;
    s/.*"WeeChat.*/IRC Chat/;
+   s/^messaging:irc:.*/IRC Chat/;
+   s/^messaging:mutt:.*/Personal Email/;
+   s/^messaging:zr-(mutt|robbits):.*/ZR Email/;
+
+   # Fun channels
+   s/(dev-potpourri|random) \| ZipRecruiter Slack - Mozilla Firefox/Fun Chat/;
+
+   # Direct messages
    s/\* [^ ]+ \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
+
+   # The rest
+   s/.* \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
+
    s/.* Google Chrome/Chrome/;
    s/.*Mozilla Firefox/Firefox/;
 
@@ -12,10 +24,10 @@ while (<STDIN>) {
       next
    }
 
-   s(^[^:]+:(vim|zsh):.+/unproductive)(Fun Project Unproductive);
-   s(^[^:]+:(vim|zsh):.+/dotfiles)(Fun Project Dotfiles);
+   s(^[^:]+:[^:]+:.+/unproductive)(Fun Project Unproductive);
+   s(^[^:]+:[^:]+:.+/dotfiles)(Fun Project Dotfiles);
 
-   s(^[^:]+:(vim|zsh):.+/zr)(ZR);
+   s(^[^:]+:[^:]+:.+/zr)(ZR);
    s(^vim:.+/zr)(ZR);
 
 
