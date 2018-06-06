@@ -30,3 +30,26 @@ $ report
 The report is dead simple currently.  It does not yet take into account the
 timestamps and only operates on all of the data at once, but once I find the
 need to I expect to build out it's capabilities.
+
+## Tips
+
+For this to work well you need to set titles of your windows.  This mostly means
+that terminal apps need to be configured a little.  I use tmux, so I needed to
+put the following two settings in my `.tmux.conf`:
+
+``` tmux
+set -g set-titles on
+set -g set-titles-string "#{session_name}:#{window_name}:#{pane_current_path}"
+```
+
+The first line tells `tmux` to set the title; the second changes the format to
+something more useful than the default.
+
+I also run `terminator` directly without `tmux` underneath.  In that case it is
+worth directly setting the title.  Here's how I do that:
+
+``` bash
+$ terminator -e "vim -S $session" -T "vim:$session"
+```
+
+Other terminals will have similar settings and techniques.
