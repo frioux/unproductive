@@ -9,13 +9,16 @@ while (<STDIN>) {
    s/^messaging:zr-(mutt|robbits):.*/ZR Email/;
 
    # Fun channels
-   s/(dev-potpourri|random) \| ZipRecruiter Slack - Mozilla Firefox/Fun Chat/;
+   s/.*(dev-potpourri|random) \| ZipRecruiter Slack - Mozilla Firefox/Fun Chat/;
 
    # Direct messages
-   s/\* [^ ]+ \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
+   s/.*\* [^ ]+ \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
 
    # The rest
    s/.* \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
+
+   s/.* Google Docs - Mozilla Firefox/ZR Docs/;
+   s/.*Google Hangouts - Google Chrome/ZR Meetings/;
 
    s/.* Google Chrome/Chrome/;
    s/.*Mozilla Firefox/Firefox/;
