@@ -5,4 +5,11 @@
    retitle |
    sort |
    uniq -c |
-   sort -n
+   sort -n |
+   perl -MList::Util=sum -e'
+   my @lines = map { chomp; my ($n, $v) = (m/\s+(\d+)\s+(.+)$/); [$n, $v] } <STDIN>;
+
+   my $total = sum(map $_->[0], @lines);
+
+   printf "%d (%d%%) %s\n", $_->[0], 100 * $_->[0] / $total, $_->[1] for @lines;
+'
