@@ -4,32 +4,68 @@ A tool for finding out how unproductive I really am.
 
 ## Description
 
-Unproductive has two major parts.  The first part runs constantly and polls the
-X server, extracting the title of the currently selected window and printing it,
-along with the current timestamp, to standard out.  Expected usage is:
+Unproductive has four major parts.
+
+### `unproductive`
+
+The first part runs constantly and polls the X server, extracting the title of
+the currently selected window and printing it, along with the current timestamp,
+what SSID you are connected to, and if you are running a vpn, to standard out.
+Expected usage is:
 
 ``` bash
 $ unproductive | tee -a ~/x11-time.txt
 ```
 
-After having that run for some time you can then run the report:
+An example recorded line is:
 
-``` bash
-$ report
-      1 Work Chat
-      2 ZR
-     24 IRC Chat
-     33 Signal
-     43 Fun Project Dotfiles
-    369 Fun Chat
-    369 Fun Project Unproductive
-    591 Chrome
-    674 Firefox
+```
+@400000005B1A9137151C6E76	Station	false	work:vim:/home/frew/code/unproductive
 ```
 
-The report is dead simple currently.  It does not yet take into account the
-timestamps and only operates on all of the data at once, but once I find the
-need to I expect to build out it's capabilities.
+(I'll probably switch it to seconds since the epoch soon.)
+
+### `filter`
+
+This is entirely unimplemented, but my intention is to write a simple Perl
+script that will filter the recorded lines.  Obviously it can filter on
+anything, but my intended filters are:
+
+ * `--time`
+ * `--ssid`
+ * `--vpn`
+ * `--measurements`
+
+So you might be run the following command to see the past week of data when you
+were working from home:
+
+``` bash
+$ < ~/x11-time.txt filter --time 7d --ssid Station --vpn
+```
+
+The idea for `--measurements` is that it does not show you data since seven days
+ago, but instead shows you seven days of data.
+
+### `retitle`
+
+Better names for this are welcome.  This reads the raw titles and writes a JSON
+list that expresses a heirarchy of what you were doing.  An example is surely
+more clear:
+
+``` bash
+$ echo 'core | ZipRecruiter Slack - Mozilla Firefox' | retitle
+["Chat", "Slack", "ZR", "Work", "core"]
+```
+
+I suspect that this tool will need to be custom built for each user.  That's
+fine.
+
+### `report`
+
+Finally, the `report` tool reads the JSON and sums and outputs the values in a
+fashion that should be reminiscent of `du(1)`.  No example output yet since I'm
+still fiddling with it, but I intend to allow it to optionally output
+percentages, human readable times (`3m` instead of 180), etc.
 
 ## Tips
 
