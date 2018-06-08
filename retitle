@@ -1,38 +1,81 @@
 #!/usr/bin/perl
 
+use warnings;
+use strict;
+
+use JSON::XS 'encode_json';
+
 while (<STDIN>) {
-   s/Signal.*/Signal/;
-   s/#[^ ]+ - Mozilla Firefox/Fun Chat/;
-   s/.*"WeeChat.*/IRC Chat/;
-   s/^messaging:irc:.*/IRC Chat/;
-   s/^messaging:mutt:.*/Personal Email/;
-   s/^messaging:zr-(mutt|robbits):.*/ZR Email/;
+   my @v;
+
+   if (m/Signal.*/) {
+      @v = (qw(Chat Play));
+   }
+   elsif (m/#([^ ]+) - Mozilla Firefox/) {
+      @v = (qw(Chat Play Discord), $1)
+   }
+   elsif (m/.*"WeeChat.*/) {
+      @v = (qw(Chat IRC))
+   }
+   elsif (m/^messaging:irc:.*/) {
+      @v = (qw(Chat IRC))
+   }
+   elsif (m/^messaging:mutt:.*/) {
+      @v = (qw(Email Personal))
+   }
+   elsif (m/^messaging:zr-(mutt|robbits):.*/) {
+      @v = (qw(Email ZR), $1)
+   }
 
    # Fun channels
-   s/.*(dev-potpourri|random) \| ZipRecruiter Slack - Mozilla Firefox/Fun Chat/;
+   elsif (m/.*(dev-potpourri|random) \| ZipRecruiter Slack - Mozilla Firefox/) {
+      @v = (qw(Chat Slack ZR Play), $1)
+   }
 
    # Direct messages
-   s/.*\* [^ ]+ \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
+   elsif (m/.*\* [^ ]+ \| ZipRecruiter Slack - Mozilla Firefox/) {
+      @v = (qw(Chat Slack ZR Work DM), $1)
+   }
 
    # The rest
-   s/.* \| ZipRecruiter Slack - Mozilla Firefox/Work Chat/;
+   elsif (m/(.*) \| ZipRecruiter Slack - Mozilla Firefox/) {
+      @v = (qw(Chat Slack ZR Work ), $1)
+   }
 
-   s/.* Google Docs - Mozilla Firefox/ZR Docs/;
-   s/.*Google Hangouts - Google Chrome/ZR Meetings/;
+   elsif (m/.* Google Docs - Mozilla Firefox/) {
+      @v = (qw(ZR Docs), $1)
+   }
+   elsif (m/.*Google Hangouts - Google Chrome/) {
+      @v = (qw(ZR Meetings), $1)
+   }
 
-   s/.* Google Chrome/Chrome/;
-   s/.*Mozilla Firefox/Firefox/;
+   elsif (m/.* Google Chrome/) {
+      @v = ('Chrome');
+   }
+   elsif (m/.*Mozilla Firefox/) {
+      @v = ('Firefox');
+   }
 
-   if ($_ eq "/bin/zsh\n" || $_ =~ m/^[^:]+:\d+:[^ ]+ - "caliburn"/) {
+   elsif ($_ eq "/bin/zsh\n" || $_ =~ m/^[^:]+:\d+:[^ ]+ - "caliburn"/) {
       next
    }
 
-   s(^[^:]+:[^:]+:.+/unproductive)(Fun Project Unproductive);
-   s(^[^:]+:[^:]+:.+/dotfiles)(Fun Project Dotfiles);
+   elsif (m(^[^:]+:[^:]+:.+/unproductive)) {
+      @v = (qw(Fun Project Unproductive));
+   }
+   elsif (m(^[^:]+:[^:]+:.+/dotfiles)) {
+      @v = (qw(Fun Project Dotfiles));
+   }
 
-   s(^[^:]+:[^:]+:.+/zr)(ZR);
-   s(^vim:.+/zr)(ZR);
+   elsif (m(^[^:]+:[^:]+:.+/zr)) {
+      @v = ('ZR');
+   }
+   elsif (m(^vim:.+/zr)) {
+      @v = ('ZR');
+   } else {
+      @v = ($_);
+   }
 
 
-   print $_;
+   print encode_json(\@v) . "\n";
 }
