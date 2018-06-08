@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/BurntSushi/xgbutil"
@@ -38,12 +39,28 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Coudln't WmNameGet: %s\n", err)
 			continue
 		}
-		fmt.Printf("%s\t%s\n", tai64n.Now().Label(), name)
+		fmt.Printf("%s\t%s\t%t\t%s\n",
+			tai64n.Now().Label(), ssid(), runningVPN(), name)
 	}
 }
 
 func isLocked() bool {
 	cmd := exec.Command("pgrep", "-c", "i3lock")
+	err := cmd.Run()
+	return err == nil
+}
+
+func ssid() string {
+	out, err := exec.Command("iwgetid", "-r").Output()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Couldn't get ssid: %s\n", err)
+		return ""
+	}
+	return strings.TrimSuffix(string(out), "\n")
+}
+
+func runningVPN() bool {
+	cmd := exec.Command("pgrep", "-c", "openvpn")
 	err := cmd.Run()
 	return err == nil
 }
