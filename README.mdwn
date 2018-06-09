@@ -34,7 +34,6 @@ anything, but my intended filters are:
  * `--time`
  * `--ssid`
  * `--vpn`
- * `--measurements`
 
 So you might be run the following command to see the past week of data when you
 were working from home:
@@ -42,9 +41,6 @@ were working from home:
 ``` bash
 $ < ~/x11-time.txt filter --time 7d --ssid Station --vpn
 ```
-
-The idea for `--measurements` is that it does not show you data since seven days
-ago, but instead shows you seven days of data.
 
 ### `retitle`
 

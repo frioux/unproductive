@@ -1,0 +1,94 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+no warnings 'uninitialized';
+
+use Getopt::Long;
+
+my ($time_filter_spec, $ssid_filter, $vpn_filter, $help);
+
+GetOptions(
+   'time=s'         => \$time_filter_spec,
+   'ssid=s'         => \$ssid_filter,
+   'vpn=s'          => \$vpn_filter,
+
+   'help|h'         => \$help,
+);
+
+if ($help) {
+   print <<"HELP";
+
+$0: [--time \$time_spec] [--ssid \$ssid] [--vpn true/false]
+
+$0 reads lines on stdin.  The format is defined by unproductive.  Use this
+script to filter which values you use for any reporting.
+
+Time specs: you can express a time in seconds or simply by appending
+common time units, like this: 1d2h3m4s
+
+Examples:
+
+Figuring out how I spent the last week when at home and not working:
+
+ $0 --time 7d --ssid Station --vpn false
+
+What did I do today at work?
+
+ $0 --time 8h --ssid ZR
+
+How do I work differently when I work from home?
+
+ $0 --time 7d --ssid Station --vpn true
+
+HELP
+
+   exit
+}
+
+my $time_filter;
+
+$time_filter = time - dur_to_s($time_filter_spec)
+   if defined $time_filter_spec;
+
+while (<STDIN>) {
+   my ($time, $ssid, $vpn, $title) = split /\t/, $_, 4;
+
+   next if defined $ssid_filter && $ssid ne $ssid_filter;
+   next if defined $vpn_filter  && $vpn  ne $vpn_filter;
+   next if defined $time_filter && $time < $time_filter;
+
+   print $title;
+}
+
+sub dur_to_s {
+   my $orig = shift;
+
+   my $arg = $orig;
+
+   my $ret = 0;
+
+   if ($arg =~ m/^(.*?)(\d+)s(.*)$/) {
+      $ret += $2;
+      $arg = "$1$3";
+   }
+   if ($arg =~ m/^(.*?)(\d+)m(.*)$/) {
+      $ret += 60 * $2;
+      $arg = "$1$3";
+   }
+   if ($arg =~ m/^(.*?)(\d+)h(.*)$/) {
+      $ret += 60 * 60 * $2;
+      $arg = "$1$3";
+   }
+   if ($arg =~ m/^(.*?)(\d+)d(.*)$/) {
+      $ret += 24 * 60 * 60 * $2;
+      $arg = "$1$3";
+   }
+
+   if ($arg) {
+      warn "dur_to_s: $orig has unknown time specs: «$arg»\n"
+   }
+
+   return $ret
+}
