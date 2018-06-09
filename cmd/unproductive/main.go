@@ -10,7 +10,6 @@ import (
 
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/ewmh"
-	"github.com/vektra/tai64n"
 )
 
 func main() {
@@ -39,8 +38,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Coudln't WmNameGet: %s\n", err)
 			continue
 		}
-		fmt.Printf("%s\t%s\t%t\t%s\n",
-			tai64n.Now().Label(), ssid(), runningVPN(), name)
+		fmt.Printf("%d\t%s\t%t\t%s\n",
+			time.Now().Unix(), ssid(), runningVPN(), name)
 	}
 }
 
