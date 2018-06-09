@@ -6,6 +6,8 @@ use strict;
 use JSON::XS 'encode_json';
 
 while (<STDIN>) {
+   chomp;
+
    my @v;
 
    if (m/Signal.*/) {
@@ -56,7 +58,7 @@ while (<STDIN>) {
       @v = ('Firefox');
    }
 
-   elsif ($_ eq "/bin/zsh\n" || $_ =~ m/^[^:]+:\d+:[^ ]+ - "caliburn"/) {
+   elsif ($_ eq "/bin/zsh" || $_ =~ m/^[^:]+:\d+:[^ ]+ - "caliburn"/) {
       next
    }
 
@@ -72,6 +74,9 @@ while (<STDIN>) {
    }
    elsif (m(^vim:.+/zr)) {
       @v = ('ZR');
+   }
+   elsif ($_ eq '') {
+         next
    } else {
       @v = ($_);
    }
