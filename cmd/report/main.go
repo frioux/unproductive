@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type Entry struct {
@@ -22,13 +23,13 @@ func (e Entry) Sum() int {
 	return ret
 }
 
-func (e Entry) Render(name string) string {
-	ret := ""
+func (e Entry) Render(name []string) string {
+	ret := "" // switch to []byte
 	for k, i := range e.Entries {
-		ret += i.Render(name + k + " / ")
+		ret += i.Render(append(name, k))
 	}
 
-	ret += fmt.Sprintf("% 7d %s\n", e.Sum(), name)
+	ret += fmt.Sprintf("% 7d %s\n", e.Sum(), strings.Join(name, "/"))
 
 	return ret
 }
@@ -62,7 +63,7 @@ func main() {
 
 	}
 
-	fmt.Println(entries.Render(""))
+	fmt.Println(entries.Render([]string{}))
 	// fmt.Printf("%#v\n", entries)
 	if err := s.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, "reading standard input:", err)
