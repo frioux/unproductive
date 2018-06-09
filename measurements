@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+no warnings 'uninitialized';
+
+my $meas = shift;
+
+exec 'tail', '-' . dur_to_s($meas);
+
+sub dur_to_s {
+   my $orig = shift;
+
+   my $arg = $orig;
+
+   my $ret = 0;
+
+   if ($arg =~ m/^(.*?)(\d+)s(.*)$/) {
+      $ret += $2;
+      $arg = "$1$3";
+   }
+   if ($arg =~ m/^(.*?)(\d+)m(.*)$/) {
+      $ret += 60 * $2;
+      $arg = "$1$3";
+   }
+   if ($arg =~ m/^(.*?)(\d+)h(.*)$/) {
+      $ret += 60 * 60 * $2;
+      $arg = "$1$3";
+   }
+   if ($arg =~ m/^(.*?)(\d+)d(.*)$/) {
+      $ret += 24 * 60 * 60 * $2;
+      $arg = "$1$3";
+   }
+
+   if ($arg) {
+      warn "dur_to_s: $orig has unknown time specs: «$arg»\n"
+   }
+
+   return $ret
+}
