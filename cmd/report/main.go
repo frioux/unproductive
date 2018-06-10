@@ -26,29 +26,17 @@ func (e Entry) Sum() int {
 	return ret
 }
 
-func (e Entry) RenderWithPercent(name []string) string {
-	return e.renderWithPercent(name, e.Sum())
-}
-
-func (e Entry) renderWithPercent(name []string, rootTotal int) string {
+func (e Entry) Render(name []string, callbacks []func(Entry) string) string {
 	ret := "" // switch to []byte
 	for k, i := range e.Entries {
-		ret += i.renderWithPercent(append(name, k), rootTotal)
+		ret += i.Render(append(name, k), callbacks)
 	}
 
-	s := e.Sum()
-	ret += fmt.Sprintf("%d\t(%d%%)\t%s\n", s, int(100*s/rootTotal), strings.Join(name, "/"))
-
-	return ret
-}
-
-func (e Entry) Render(name []string) string {
-	ret := "" // switch to []byte
-	for k, i := range e.Entries {
-		ret += i.Render(append(name, k))
+	inners := make([]string, len(callbacks))
+	for i, cb := range callbacks {
+		inners[i] = cb(e)
 	}
-
-	ret += fmt.Sprintf("% 7d %s\n", e.Sum(), strings.Join(name, "/"))
+	ret += fmt.Sprintf("%d\t%s\t%s\n", e.Sum(), strings.Join(inners, "\t"), strings.Join(name, "/"))
 
 	return ret
 }
@@ -84,11 +72,17 @@ func main() {
 
 	}
 
+	cbs := []func(Entry) string{}
 	if showPercents {
-		fmt.Print(entries.RenderWithPercent([]string{}))
-	} else {
-		fmt.Println(entries.Render([]string{}))
+		total := entries.Sum()
+		cbs = append(cbs, func(e Entry) string {
+			s := e.Sum()
+			return fmt.Sprintf("(%d%%)", int(100*s/total))
+		})
 	}
+
+	fmt.Println(entries.Render([]string{}, cbs))
+
 	if err := s.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, "reading standard input:", err)
 		os.Exit(1)
