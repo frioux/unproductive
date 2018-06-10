@@ -48,17 +48,39 @@ a full hour, but it would have a gap.
 
 ### `retitle`
 
-Better names for this are welcome.  This reads the raw titles and writes a JSON
-list that expresses a heirarchy of what you were doing.  An example is surely
-more clear:
+`retitle` is responsible for taking the raw titles and producing some form of
+structure.  The default `retitle` simply turns each title into it's own top
+level item, but far more nuance can be expressed.  [My custom retitle can be seen
+here.](https://github.com/frioux/dotfiles/blob/3e5553bdc63b28b5f1c44fbbd63bc817a1f3ef84/bin/retitle)
 
-``` bash
-$ echo 'core | ZipRecruiter Slack - Mozilla Firefox' | retitle
-["Chat", "Slack", "ZR", "Work", "core"]
+If you are writing your own `retitle` you simply need to produce JSON lists
+expressing your heirarchy.  So let's say you wanted to split all of your time by
+whether it was "Work" or "Play" and then have categories within those; you might
+write code like this:
+
+``` perl
+#!/usr/bin/perl
+
+use JSON::XS 'encode_json';
+
+while (<STDIN>) {
+   chomp;
+
+   my @v;
+
+   if (m/fogbugz/) {
+      @v = (qw(Work fogbugz));
+   } elsif (m/Issues - (frioux/dotfiles|frioux/unproductive) - Mozilla Firefox) {
+      @v = ('Play, 'Github Issues', $1);
+   } else {
+      @v = ($_)
+   }
+
+   print encode_json(\@v) . "\n";
+}
 ```
 
-I suspect that this tool will need to be custom built for each user.  That's
-fine.
+Of course it can be any language you like.
 
 ### `report`
 
