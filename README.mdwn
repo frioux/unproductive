@@ -14,22 +14,19 @@ what SSID you are connected to, and if you are running a vpn, to standard out.
 Expected usage is:
 
 ``` bash
-$ unproductive | tee -a ~/x11-time.txt
+$ unproductive | tee -a ~/activity-log.txt
 ```
 
 An example recorded line is:
 
 ```
-@400000005B1A9137151C6E76	Station	false	work:vim:/home/frew/code/unproductive
+1528639301	Station	false	work:vim:/home/frew/code/unproductive
 ```
-
-(I'll probably switch it to seconds since the epoch soon.)
 
 ### `filter`
 
-This is entirely unimplemented, but my intention is to write a simple Perl
-script that will filter the recorded lines.  Obviously it can filter on
-anything, but my intended filters are:
+`filter` filters the data before rendering it.  The following flags are built
+in:
 
  * `--time`
  * `--ssid`
@@ -39,8 +36,15 @@ So you might be run the following command to see the past week of data when you
 were working from home:
 
 ``` bash
-$ < ~/x11-time.txt filter --time 7d --ssid Station --vpn
+$ < ~/activity-log.txt filter --time 7d --ssid Station --vpn
 ```
+
+There is also a standalone filter tool called `measurements`.  Where the
+`--time` flag from `filter` allows you to limit to only the past `1h` of data,
+`measurements` just takes the last `1h` of data, no matter when it occurred.  So
+for example, if your laptop was asleep for the past hour and you turned it on,
+`filter --time 1h` would return almost no data.  `measurements 1h` would return
+a full hour, but it would have a gap.
 
 ### `retitle`
 
@@ -59,9 +63,36 @@ fine.
 ### `report`
 
 Finally, the `report` tool reads the JSON and sums and outputs the values in a
-fashion that should be reminiscent of `du(1)`.  No example output yet since I'm
-still fiddling with it, but I intend to allow it to optionally output
-percentages, human readable times (`3m` instead of 180), etc.
+fashion that should be reminiscent of `du(1)`.  Here's an example bit of output,
+including all the tools discussed:
+
+``` bash
+$ < ~/activity-log.txt filter --time 1h |
+   retitle |
+   report -show-percents |
+   sort -n
+1       (0%)    Coffee/Writing
+1       (0%)    Email
+1       (0%)    Email/ZR
+1       (0%)    Email/ZR/mutt
+2       (0%)    Chat/IRC
+3       (0%)    Coffee/Reading
+4       (0%)    Chat/Play/Discord
+4       (0%)    Chat/Play/Discord/general
+4       (0%)    Coffee
+14      (0%)    Strategy/Notes/Reading
+19      (1%)    Chrome
+31      (2%)    Chat/Play
+33      (2%)    Chat
+50      (3%)    Strategy/Notes/Writing
+64      (4%)    Strategy
+64      (4%)    Strategy/Notes
+557     (38%)   Firefox
+768     (53%)   Fun
+768     (53%)   Fun/Project
+768     (53%)   Fun/Project/Unproductive
+1446    (100%)
+```
 
 ## Tips
 
