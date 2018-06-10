@@ -1,7 +1,11 @@
 .PHONY: bin
 
-bin: cmd/report/report cmd/unproductive/unproductive
+bin: bin/report bin/unproductive
+
+bin/report: cmd/report/report
 	cp cmd/report/report bin/
+
+bin/unproductive: cmd/unproductive/unproductive
 	cp cmd/unproductive/unproductive bin/
 
 cmd/report/report: cmd/report/main.go
