@@ -7,9 +7,11 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 var showPercents bool
+var showDurations bool
 
 type Entry struct {
 	Count   int
@@ -47,6 +49,7 @@ func NewEntry() *Entry {
 
 func main() {
 	flag.BoolVar(&showPercents, "show-percents", false, "Set to include percentage of total")
+	flag.BoolVar(&showDurations, "show-durations", false, "Set to include durations")
 	flag.Parse()
 	s := bufio.NewScanner(os.Stdin)
 	var path []string
@@ -78,6 +81,12 @@ func main() {
 		cbs = append(cbs, func(e Entry) string {
 			s := e.Sum()
 			return fmt.Sprintf("(%d%%)", int(100*s/total))
+		})
+	}
+
+	if showDurations {
+		cbs = append(cbs, func(e Entry) string {
+			return (time.Second * time.Duration(e.Sum())).String()
 		})
 	}
 
