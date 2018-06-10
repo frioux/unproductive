@@ -1,3 +1,4 @@
 /cmd/report/report
 /cmd/unproductive/unproductive
-
+/bin/report
+/bin/unproductive
