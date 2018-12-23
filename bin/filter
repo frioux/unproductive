@@ -57,6 +57,9 @@ while (<STDIN>) {
 
    next if defined $ssid_filter && $ssid ne $ssid_filter;
    next if defined $vpn_filter  && $vpn  ne $vpn_filter;
+
+   next if $time !~ /^[0-9]+$/;
+
    next if defined $time_filter && $time < $time_filter;
 
    print $title;
